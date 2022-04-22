@@ -1,0 +1,534 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Fasttrack CarPro Ingest API",
+        "version": "0.1.1"
+    },
+    "paths": {
+        "/oauth2/token": {
+            "post": {
+                "summary": "Request an OAuth2 token",
+                "operationId": "oauth_oauth2_token_post",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_oauth_oauth2_token_post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/customer/contract": {
+            "post": {
+                "summary": "Upsert Contract Data",
+                "operationId": "upsert_contract_data_customer_contract_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CustomerContract"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPInternalServerError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/customer": {
+            "post": {
+                "summary": "Upsert Customer Data",
+                "operationId": "upsert_customer_data_customer_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Customer"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPInternalServerError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Amount": {
+                "title": "Amount",
+                "required": [
+                    "value",
+                    "unit"
+                ],
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "Value",
+                        "type": "number",
+                        "example": 1.50
+                    },
+                    "unit": {
+                        "title": "Unit",
+                        "type": "string",
+                        "example": "EUR"
+                    }
+                }
+            },
+            "Body_oauth_oauth2_token_post": {
+                "title": "Body_oauth_oauth2_token_post",
+                "required": [
+                    "grant_type",
+                    "client_id",
+                    "client_secret"
+                ],
+                "type": "object",
+                "properties": {
+                    "grant_type": {
+                        "title": "Grant Type",
+                        "type": "string"
+                    },
+                    "client_id": {
+                        "title": "Client Id",
+                        "type": "string"
+                    },
+                    "client_secret": {
+                        "title": "Client Secret",
+                        "type": "string"
+                    }
+                }
+            },
+            "Brand": {
+                "title": "Brand",
+                "enum": [
+                    "vw",
+                    "vwn",
+                    "porsche",
+                    "dutchfinance",
+                    "autocash",
+                    "audi",
+                    "seat",
+                    "skoda",
+                    "vwfs",
+                    "bentley",
+                    "cupra"
+                ],
+                "type": "string",
+                "description": "Brand types within Volkswagen group"
+            },
+            "Consent": {
+                "title": "Consent",
+                "required": [
+                    "dataPrivacyConsentAcceptance",
+                    "brand"
+                ],
+                "type": "object",
+                "properties": {
+                    "dataPrivacyConsentAcceptance": {
+                        "title": "Dataprivacyconsentacceptance",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "allowPostalAds": {
+                        "title": "Allowpostalads",
+                        "type": "boolean"
+                    },
+                    "allowPhoneAds": {
+                        "title": "Allowphoneads",
+                        "type": "boolean"
+                    },
+                    "allowMailAds": {
+                        "title": "Allowmailads",
+                        "type": "boolean"
+                    },
+                    "brand": {
+                        "$ref": "#/components/schemas/Brand"
+                    }
+                }
+            },
+            "Contract": {
+                "title": "Contract",
+                "required": [
+                    "storefrontTransactionId",
+                    "ContractId",
+                    "vin",
+                    "deliveryCostAmount",
+                    "product",
+                    "minDuration",
+                    "durationUnit",
+                    "monthlyMileage",
+                    "mileageUnit",
+                    "monthlyRateAmount",
+                    "monthlyRateAmountAddOns",
+                    "monthlyTotalRateAmount",
+                    "excessMileagePriceAmount",
+                    "subscriptionVehicleCategory",
+                    "freeTextField",
+                    "inceptionDate"
+                ],
+                "type": "object",
+                "properties": {
+                    "storefrontTransactionId": {
+                        "title": "Storefronttransactionid",
+                        "type": "string"
+                    },
+                    "ContractId": {
+                        "title": "Contractid",
+                        "type": "string"
+                    },
+                    "vin": {
+                        "title": "Vin",
+                        "type": "string"
+                    },
+                    "deliveryCostAmount": {
+                        "$ref": "#/components/schemas/Amount"
+                    },
+                    "product": {
+                        "title": "Product",
+                        "type": "string"
+                    },
+                    "minDuration": {
+                        "title": "Minduration",
+                        "type": "integer"
+                    },
+                    "durationUnit": {
+                        "title": "Durationunit",
+                        "type": "string"
+                    },
+                    "monthlyMileage": {
+                        "title": "Monthlymileage",
+                        "type": "integer"
+                    },
+                    "mileageUnit": {
+                        "title": "Mileageunit",
+                        "type": "string"
+                    },
+                    "monthlyRateAmount": {
+                        "$ref": "#/components/schemas/Amount"
+                    },
+                    "monthlyRateAmountAddOns": {
+                        "$ref": "#/components/schemas/Amount"
+                    },
+                    "monthlyTotalRateAmount": {
+                        "$ref": "#/components/schemas/Amount"
+                    },
+                    "excessMileagePriceAmount": {
+                        "$ref": "#/components/schemas/Amount"
+                    },
+                    "subscriptionVehicleCategory": {
+                        "title": "Subscriptionvehiclecategory",
+                        "type": "string"
+                    },
+                    "freeTextField": {
+                        "title": "Freetextfield",
+                        "type": "string"
+                    },
+                    "servicePackageLabel": {
+                        "title": "Servicepackagelabel",
+                        "type": "string"
+                    },
+                    "servicePackageAdditionalLabel": {
+                        "title": "Servicepackageadditionallabel",
+                        "type": "string"
+                    },
+                    "servicePackageCost": {
+                        "$ref": "#/components/schemas/Amount"
+                    },
+                    "deliveryOption": {
+                        "title": "Deliveryoption",
+                        "type": "string"
+                    },
+                    "licensePlate": {
+                        "title": "Licenseplate",
+                        "type": "string"
+                    },
+                    "inceptionDate": {
+                        "title": "Inceptiondate",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "contractCancellationDate": {
+                        "title": "Contractcancellationdate",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "contractCancellationNoticeDate": {
+                        "title": "Contractcancellationnoticedate",
+                        "type": "string",
+                        "format": "date"
+                    }
+                }
+            },
+            "Customer": {
+                "title": "Customer",
+                "required": [
+                    "carproCustomerAccountId",
+                    "salutation",
+                    "firstName",
+                    "lastName",
+                    "dateOfBirth",
+                    "street",
+                    "houseNumber",
+                    "zipCode",
+                    "city",
+                    "countryCode",
+                    "mobilePhoneCountryCode",
+                    "mobilePhoneNumber",
+                    "email",
+                    "placeOfBirth",
+                    "nationality",
+                    "consent"
+                ],
+                "type": "object",
+                "properties": {
+                    "verimiId": {
+                        "title": "Verimiid",
+                        "type": "string"
+                    },
+                    "carproCustomerAccountId": {
+                        "title": "Carprocustomeraccountid",
+                        "type": "string"
+                    },
+                    "salutation": {
+                        "title": "Salutation",
+                        "type": "string"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "firstName": {
+                        "title": "Firstname",
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "title": "Lastname",
+                        "type": "string"
+                    },
+                    "dateOfBirth": {
+                        "title": "Dateofbirth",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "street": {
+                        "title": "Street",
+                        "type": "string"
+                    },
+                    "houseNumber": {
+                        "title": "Housenumber",
+                        "type": "string"
+                    },
+                    "zipCode": {
+                        "title": "Zipcode",
+                        "type": "string"
+                    },
+                    "city": {
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "countryCode": {
+                        "title": "Countrycode",
+                        "type": "string"
+                    },
+                    "mobilePhoneCountryCode": {
+                        "title": "Mobilephonecountrycode",
+                        "type": "string"
+                    },
+                    "mobilePhoneNumber": {
+                        "title": "Mobilephonenumber",
+                        "type": "string"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string"
+                    },
+                    "placeOfBirth": {
+                        "title": "Placeofbirth",
+                        "type": "string"
+                    },
+                    "nationality": {
+                        "title": "Nationality",
+                        "type": "string"
+                    },
+                    "consent": {
+                        "$ref": "#/components/schemas/Consent"
+                    }
+                }
+            },
+            "CustomerContract": {
+                "title": "CustomerContract",
+                "required": [
+                    "carproCustomerAccountId",
+                    "contracts"
+                ],
+                "type": "object",
+                "properties": {
+                    "verimiId": {
+                        "title": "Verimiid",
+                        "type": "string"
+                    },
+                    "carproCustomerAccountId": {
+                        "title": "Carprocustomeraccountid",
+                        "type": "string"
+                    },
+                    "contracts": {
+                        "title": "Contracts",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Contract"
+                        }
+                    }
+                }
+            },
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "HTTPInternalServerError": {
+                "title": "HTTPInternalServerError",
+                "type": "object"
+            },
+            "OAuthResponse": {
+                "title": "OAuthResponse",
+                "required": [
+                    "access_token",
+                    "expires_in",
+                    "token_type"
+                ],
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "title": "Access Token",
+                        "type": "string"
+                    },
+                    "expires_in": {
+                        "title": "Expires In",
+                        "type": "integer"
+                    },
+                    "token_type": {
+                        "title": "Token Type",
+                        "type": "string"
+                    }
+                }
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
